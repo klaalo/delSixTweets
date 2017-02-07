@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Oma twitter</title>
+
+    <meta name="description" 
+          content="Oman Twitter-tilin tilatieto" />
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous" />
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+
+	<style>
+	.glyphicon-spin {
+    	-webkit-animation: spin 1000ms infinite linear;
+    	animation: spin 1000ms infinite linear;
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+	  100% {
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+	  100% {
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}	
+	
+	</style>
+
+
+    </head>
+    <body>
+
+<div class="container">
+
+	<nav class="navbar navbar-default">
+	<div class="container-fluid">
+		<ul class="nav navbar-nav navbar-right">
+			<li th:if="${session.twitterAccessToken == null}">
+				<a class="btn btn-default" th:href="${twitterLoginUrl}"><img 
+					alt="Sign in with Twitter" 
+					src="/sign-in-with-twitter-link.png" /></a></li>
+			<li th:if="${session.twitterAccessToken != null}">
+				<a th:href="${'https://twitter.com/' + twitterLoginName}"
+					class="twitter-follow-button"
+					data-show-count="false">
+					@<span th:text="${twitterLoginName}"></span></a>
+			</li>
+		</ul>
+	</div>
+	</nav>
+		
+	<div class="col-md-2" th:if="${session.twitterAccessToken != null}">
+		<div class="btn-group-vertical" role="group">
+     			<button class="btn btn-default btnJsonOp" type="button"
+				data-loading-text="&lt;span class='glyphicon glyphicon-refresh glyphicon-spin' aria-hidden='true'&gt;&lt;/span/gt;" 
+				data-done-text="&lt;span class='glyphicon glyphicon-ok' aria-hidden='true'&gt;&lt;/span&gt;"
+				data-error-text="&lt;span class='glyphicon glyphicon-remove' aria-hidden='true'&gt;&lt;/span&gt;"
+				data-toggle='tooltip'
+				data-placement='right'
+				data-container='body'
+				title="Thi will initiate a job to fetch your Tweets from Twitter
+					and load more after initial fetch. Tweets are loaded in chunks.
+					We will try to get them all, but as we are under quota,
+					theres only so much we can get at a time.
+					If you don't see your oldest tweet, wait and load more."
+				id="getOldTweets">Get Tweets
+		</button>
+     			<button class="btn btn-default btnJsonOp" type="button" role="button"
+				data-loading-text="&lt;span class='glyphicon glyphicon-refresh glyphicon-spin' aria-hidden='true'&gt;&lt;/span&gt;" 
+				data-done-text="&lt;span class='glyphicon glyphicon-ok' aria-hidden='true'&gt;&lt;/span&gt;"
+				data-error-text="&lt;span class='glyphicon glyphicon-remove' aria-hidden='true'&gt;&lt;/span&gt;"
+				data-toggle='tooltip'
+				data-placement='right'
+				data-container='body'
+				title="Delete your Tweets that are stored on this server.
+					This doesn't delete them from Twitter."
+				id="delMyTweets">Delete my stored Tweets
+		</button>
+     			<button class="btn btn-default btnJsonOp" type="button"
+				data-loading-text="&lt;span class='glyphicon glyphicon-refresh glyphicon-spin' aria-hidden='true'&gt;&lt;/span&gt;" 
+				data-done-text="&lt;span class='glyphicon glyphicon-ok' aria-hidden='true'&gt;&lt;/span&gt;"
+				data-error-text="&lt;span class='glyphicon glyphicon-remove' aria-hidden='true'&gt;&lt;/span&gt;"
+				th:if="${superAdmin}"
+				id="delTweetlessOembed">Delete tweetless oembed
+		</button>
+     			<button class="btn btn-default" type="button"
+				data-loading-text="&lt;span class='glyphicon glyphicon-refresh glyphicon-spin' aria-hidden='true'&gt;&lt;/span&gt;" 
+				data-done-text="&lt;span class='glyphicon glyphicon-ok' aria-hidden='true'&gt;&lt;/span&gt;"
+				data-error-text="&lt;span class='glyphicon glyphicon-remove' aria-hidden='true'&gt;&lt;/span&gt;"
+				data-toggle='tooltip'
+				data-placement='right'
+				data-container='body'
+				title="Destroy your Tweets that are displayed on this page. 
+					Tweets are destroyed both from Twitter and from 
+					this server. After they are removed they cannot be restored."
+				id="delDisplayedTweets">Destroy displayed Tweets
+		</button>
+		<button class="btn btn-default" type="button" id="modalBtn"
+			th:if="${superAdmin}"
+			data-toggle="modal" data-target="#myModal">
+			rateList
+		</button>
+		</div>
+	</div>
+	
+	<div class="col-md-offset-1 col-md-8" th:if="${session.twitterAccessToken != null}">
+		<button class="btn btn-default" type="button" id="skip">
+			<span class="glyphicon glyphicon-step-backward"></span>
+		</button>
+		<button class="btn btn-default pull-right" type="button" id="last">
+			<span class="glyphicon glyphicon-fast-forward"></span>
+		</button>
+	</div>
+	
+	<div id="tweets" class ="col-md-offset-1 col-md-8">
+   </div>
+        
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  		<div class="modal-dialog" role="document">
+    		<div class="modal-content">
+      			<div class="modal-header">
+        			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        			<h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      			</div>
+      			<div class="modal-body">
+        			<table id="rateListTbl" class="table">
+        			</table>
+      			</div>
+    		</div>
+  		</div>
+	</div>
+        
+</div>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+	var logged = /*[[${session.twitterAccessToken != null }]]*/ false;
+	
+	// http://stackoverflow.com/questions/19491336/get-url-parameter-jquery-or-how-to-get-query-string-values-in-js
+	function getUrlParameter(sParam) {
+	    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+	        sURLVariables = sPageURL.split('&'),
+	        sParameterName,
+	        i;
+
+	    for (i = 0; i < sURLVariables.length; i++) {
+	        sParameterName = sURLVariables[i].split('=');
+
+	        if (sParameterName[0] === sParam) {
+	            return sParameterName[1] === undefined ? true : sParameterName[1];
+	        }
+	    }
+	};
+	
+	function getTweets(skip) {
+		if (skip > 0) {
+			url = 'oldestTweetList?skipStr=' + skip
+		} else {
+			url = 'oldestTweetList'
+		}
+		$("#tweets").empty();
+		$.getJSON(url, function (jsonReply) {
+			var count=0;
+			$.each(jsonReply, function () {
+				if (count==0) {
+					$("#tweets").append('<div class="row tweetRow">');
+				}
+				$(".tweetRow:last").append('<div class="col-md-4 tweet" data-id="' +
+					this.id + '">' +
+					this.oembed + "</div>");
+				count++;
+				if (count==3) {
+					$("#tweets").append('</div>');
+					count=0;
+				}
+	  		});
+		 });
+	}
+	
+	$('.btnJsonOp').on('click', function (event) {
+		event.preventDefault();
+		var btn = $(this);
+		btn.button('loading');
+		setTimeout(function () {
+			btn.button('reset');
+		}, 5000);
+		$.getJSON('twitterJson?op=' + btn.attr('id'), function (data) {
+			if (data.status == 'done' ||
+					data.status == 'ok') {
+				btn.button('reset');
+				if (btn.attr('id') == 'getOldTweets' ||
+						btn.attr('id') == 'delMyTweets') {
+					getTweets();
+				}
+			}
+		});
+		$('[data-toggle="tooltip"]').tooltip('hide');
+	});
+	
+	$(function () {
+
+		$(document).ajaxSend(function(e, xhr, options) {
+			var token = /*[[${_csrf.token}]]*/
+			var header = /*[[${_csrf.headerName}]]*/
+			xhr.setRequestHeader(header, token);
+		});
+		
+		$('[data-toggle="tooltip"]').tooltip();
+		  if (logged) {
+			  if (typeof getUrlParameter('oauth_verifier') == 'string' ) {
+				  history.pushState({foo:'bar'}, "Oma twitter", '/');
+			  }
+			  if (typeof getUrlParameter('skipStr') == 'string' ) {
+				getTweets(getUrlParameter('skipStr'));  
+			  } else {
+			  	getTweets();
+			  }
+		  }
+	});
+	
+	$('#modalBtn').on('click', function (event) {
+		$('#rateListTbl').empty();
+		$.getJSON('twitterJson?op=rateList', function (data) {
+			console.log(data);
+			$.each(data, function (key, value) {
+				if (key != 'status' && key != 'op') {
+					$('#rateListTbl').append(
+						'<tr><td>' + key + '</td><td>' + value + '</td></tr>');
+				}
+			});
+		});
+	});
+	
+	$('#delDisplayedTweets').on('click', function(event) {
+		var btn = $(this);
+		btn.button('loading');
+		setTimeout(function () {
+			btn.button('reset');
+		}, 5000);
+		var tweets = new Array();
+		$(".tweet").each(function() {
+			tweets.push($(this).data("id"));
+		});
+		if (tweets.length > 0) {
+			$.post('twitterJson?op=' + $(this).attr('id'), { 'tweetId': tweets }, function ( data ) {
+				if (data.status[0] == 'done' ||
+						data.status[0] == 'ok') {
+					btn.button('reset');
+					$.each(data.deleted, function (idx, str) {
+						$("#tweets>div").each(function(idx, elem) {
+							var id = $(elem).data("id");
+							if (id == str) {
+								$(elem).remove();
+							}
+						});
+						
+					});
+				}
+			});
+			getTweets();
+		}
+	});
+	
+	$('#skip').on('click', function (event) {
+		var max = 0;
+		$(".tweet").each(function(idx, elem) {
+			var id = $(elem).data("id")
+			if (max == 0) {
+				max = id;
+			}
+			if (id > max) {
+				max = id;
+			}
+		});
+		history.pushState({foo:'bar'}, "Oma twitter", '/#?skipStr=' + max);
+		getTweets(max);
+	});
+
+	$('#last').on('click', function (event) {
+		history.pushState({foo:'bar'}, "Oma twitter", 'twitter.html');
+		getTweets();
+	});	
+
+/*]]>*/
+</script>
+
+
+    </body>
+</html>
