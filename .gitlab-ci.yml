@@ -1,4 +1,4 @@
-image: maven:alpine
+image: openjdk:8-jdk-alpine
 
 build: 
   script: "mvn test -B"
