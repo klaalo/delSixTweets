@@ -1,5 +1,8 @@
 image: maven:3-jdk-8
 
+before_script:
+  - curl -u "${props}" -o src/main/resources/private.properties https://trin.karilaalo.fi/misc/own/contactForm-private.properties
+
 build: 
-  script: "echo -e \"${props}\\n\" && mvn test -B"
+  script: mvn test -B"
   
