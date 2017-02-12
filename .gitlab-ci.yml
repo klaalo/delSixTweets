@@ -4,5 +4,5 @@ before_script:
   - curl -su "${props}" -o src/main/resources/private.properties https://trin.karilaalo.fi/misc/own/contactForm-private.properties
 
 build: 
-  script: "mvn test -B"
+  script: "mvn -B verify jacoco:report"
   
