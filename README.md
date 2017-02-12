@@ -1,0 +1,1 @@
+[![build status](https://gitlab.com/kari.laalo/delSixTweets/badges/master/build.svg)](https://gitlab.com/kari.laalo/delSixTweets/commits/master)
