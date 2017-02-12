@@ -438,7 +438,7 @@ public class TwitterCtrl {
 	    	}*/
 	    	callbackURL = new StringBuffer(url);
 	        int index = callbackURL.lastIndexOf("/");
-	        callbackURL.replace(index, callbackURL.length(), "").append("/twitter.html");
+	        callbackURL.replace(index, callbackURL.length(), "").append("/");
 	        //log.info("--- callback URL: " + callbackURL);
 	        
 	        try {
