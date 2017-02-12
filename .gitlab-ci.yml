@@ -2,8 +2,8 @@ image: maven:3-jdk-8
 
 before_script:
   - curl -su "${props}" -o src/main/resources/private.properties https://trin.karilaalo.fi/misc/own/contactForm-private.properties
-  - "cat target/site/jacoco/index.html"
 
 build: 
-  script: "mvn -B verify jacoco:report"
-  
+  script: 
+    - "mvn -B verify jacoco:report"
+    - "cat target/site/jacoco/index.html"
