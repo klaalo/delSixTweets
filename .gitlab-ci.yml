@@ -1,6 +1,7 @@
 image: maven:3-jdk-8
 
 before_script:
+  - docker info
   - curl -vu "${props}" -o src/main/resources/private.properties https://trin.karilaalo.fi/misc/own/contactForm-private.properties
 
 build: 
