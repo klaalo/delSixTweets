@@ -6,7 +6,7 @@ build:
   script: 
     - "mvn -B verify jacoco:report"
     - "cat target/site/jacoco/index.html"
-    
+
 deploy:
   script:
     - curl -su "${props}" https://delsixtweets.kari.iki.fi/cgi/build.sh
