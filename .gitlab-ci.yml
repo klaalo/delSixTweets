@@ -1,13 +1,12 @@
 image: maven:3-jdk-8
 
-before_script:
-  - curl -su "${props}" -o src/main/resources/private.properties https://trin.karilaalo.fi/misc/own/contactForm-private.properties
-
 build: 
+  before_script:
+    - curl -su "${props}" -o src/main/resources/private.properties https://trin.karilaalo.fi/misc/own/contactForm-private.properties
   script: 
     - "mvn -B verify jacoco:report"
     - "cat target/site/jacoco/index.html"
     
 deploy:
   script:
-    - curl -su "${props}" https://https://delsixtweets.kari.iki.fi/cgi/build.sh
+    - curl -su "${props}" https://delsixtweets.kari.iki.fi/cgi/build.sh
