@@ -126,10 +126,28 @@
 		</button>
 	</div>
 	
-	<div id="tweets" class ="col-md-offset-1 col-md-8">
+	<div id="tweets" class ="col-md-offset-1 col-md-8" th:if="${session.twitterAccessToken != null}">
    </div>
         
-	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class ="col-md-offset-1 col-md-8" th:if="${session.twitterAccessToken == null}">
+		<h2>delSixTweets</h2>
+		<p>This is a simple <a href='https://projects.spring.io/spring-boot/'>Spring Boot</a> project to remove six tweets at a time.
+		Twitter's own user interface makes it quite difficult to remove tweets in bulk.
+		DelSixTweets makes it easier to reduce your social footprint. This project was initiated as an example to utilise:</p>
+		<ul>
+			<li><a href='https://dev.twitter.com'>Twitter API</a></li>
+			<li>Spring Boot</li>
+		</ul>
+		<p><a href='http://twitter4j.org'>Twitter4j</a> library is used to connect to Twitter API.</p>
+		<h3>Continuous Integration</h3>
+		<p>Gitlab makes possible to use <a href='https://docs.gitlab.com/ee/ci/pipelines.html'>Pipelines</a> with a local 
+		<a href='https://docs.gitlab.com/runner/'>runner</a>. The project has been set up so that each successful build job
+		on the pipeline will be followed by another job to deploy a new revision onto the server.</p>
+		<h3>Source code hosting</h3>
+		<p>The source code of the demo is hosted at <a href='https://gitlab.com/kari.laalo/delSixTweets'>Gitlab</a>.</p>
+   </div>
+        
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" th:if="${session.twitterAccessToken != null and superAdmin}">
   		<div class="modal-dialog" role="document">
     		<div class="modal-content">
       			<div class="modal-header">
@@ -146,7 +164,7 @@
         
 </div>
 
-<script th:inline="javascript">
+<script th:inline="javascript" th:if="${session.twitterAccessToken != null}">
 /*<![CDATA[*/
 	var logged = /*[[${session.twitterAccessToken != null }]]*/ false;
 	
@@ -297,7 +315,6 @@
 
 /*]]>*/
 </script>
-
 
     </body>
 </html>
