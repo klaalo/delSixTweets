@@ -90,6 +90,8 @@ public class TwitterCtrl {
 				long user = twitter.getOAuthAccessToken().getUserId();
 				if (user == conf.getTwitterSuper()) {
 					model.addAttribute("superAdmin", true);
+				} else {
+					model.addAttribute("superAdmin", false);
 				}
 			} catch (TwitterException e) {
 				e.printStackTrace();
