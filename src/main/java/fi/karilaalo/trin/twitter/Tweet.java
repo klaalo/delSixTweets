@@ -2,16 +2,20 @@ package fi.karilaalo.trin.twitter;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+
 import twitter4j.Status;
 
-import org.springframework.data.annotation.Id;
 
+@Entity
 public class Tweet {
 	
 	@Id long id;
 	Date created;
 	Long owner;
-	Status status;
+	@Lob Status status;
 	
 	public Tweet() {
 			

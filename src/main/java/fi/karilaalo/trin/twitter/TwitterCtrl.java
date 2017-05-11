@@ -1,8 +1,5 @@
 package fi.karilaalo.trin.twitter;
 
-import static org.springframework.data.mongodb.core.query.Criteria.where;
-import static org.springframework.data.mongodb.core.query.Query.query;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -17,10 +14,8 @@ import org.apache.log4j.Logger;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,17 +44,18 @@ public class TwitterCtrl {
 	private final String STAT_STR = "status";
 	private final String COUNT_STR = "count";
 	
-	private final MongoTemplate mongoTpl;
 	private final LimitService limitSer;
 	
 	Logger log = Logger.getLogger(this.getClass());
 	
 	@Autowired
 	private TwitterConfiguration conf;
+	@Autowired
+	private TweetRepository tweets;
+	@Autowired
+	private OembedRepository oembeds;
 	
-	public TwitterCtrl (MongoTemplate mongoTemplate,
-			LimitService lService) {
-		this.mongoTpl = mongoTemplate;
+	public TwitterCtrl (LimitService lService) {
 		this.limitSer = lService;
 	}
 
@@ -118,6 +114,7 @@ public class TwitterCtrl {
 		return retMap;
 	}
 	
+	@Transactional
 	@GetMapping("/twitterJson")
 	@ResponseBody
 	public Map<String, String> getJson (@RequestParam String op,
@@ -174,11 +171,9 @@ public class TwitterCtrl {
 			case "delMyTweets":
 				try {
 					long owner = twitter.getOAuthAccessToken().getUserId();
-					count += mongoTpl.remove(
-							query(where("owner").is(owner)),
-							Tweet.class).getN();
+					count += tweets.deleteByOwner(owner);
 					if (count > 0) {
-						mongoTpl.remove(query(where("owner").is(owner)), Oembed.class);
+						oembeds.deleteByOwner(owner);
 					}
 					retMap.put(COUNT_STR, String.valueOf(count));
 					retMap.put(STAT_STR, OK_STAT_STR);
@@ -195,13 +190,16 @@ public class TwitterCtrl {
 				}
 				List<Oembed> oList;
 				try {
-					oList = mongoTpl.find(
-							query(where("owner").is(twitter.getOAuthAccessToken().getUserId())),
-								Oembed.class);
+					oList = oembeds.findByOwner(twitter.getOAuthAccessToken().getUserId());
 					for (Oembed o: oList) {
-						if (!mongoTpl.exists(
-								query(where("id").is(o.getId())), Tweet.class)) {
-							count += mongoTpl.remove(o).getN();
+						if (tweets.countById(o.getId()) > 0) {
+							try {
+								oembeds.delete(o.getId());
+								count += 1;
+							} catch (IllegalArgumentException e) {
+								// oembed not found
+							}
+							
 						}
 					}
 					retMap.put(STAT_STR, OK_STAT_STR);
@@ -257,12 +255,10 @@ public class TwitterCtrl {
 			for (String idStr: idPars) {
 				log.debug("deleting tweet: " + idStr);
 				long id = Long.parseLong(idStr);
-				int n = mongoTpl.remove(query(where("id").is(id)
-						.and("owner").is(user)),
-						Tweet.class).getN();
+				Long n = tweets.deleteByIdAndOwner(id, user);
 				if (n > 0) {
 					count += n;
-					mongoTpl.remove(query(where("id").is(id)), Oembed.class);
+					oembeds.delete(id);
 					try {
 						twitter.destroyStatus(id);
 					} catch (TwitterException e) {
@@ -271,8 +267,8 @@ public class TwitterCtrl {
 						e.printStackTrace();
 						return retMap;
 					}
+					deleted.add(idStr);
 				}
-				deleted.add(idStr);
 			}
 			retMap.put("deleted", deleted);
 			String[] strs = { OK_STAT_STR, String.valueOf(count) };
@@ -304,18 +300,12 @@ public class TwitterCtrl {
 
 		try {
 			long owner = twitter.getOAuthAccessToken().getUserId();
-			Query query;
+			List<Tweet> tweetList;
 			if (skipStr != null && !skipStr.isEmpty()) {
-				query = query(where("owner").is(owner)
-						.and("id").gt(Long.parseLong(skipStr)));
+				tweetList = tweets.findFirst6ByOwnerAndIdGreaterThanOrderByCreatedAsc(owner, Long.parseLong(skipStr));
 			} else {
-				query = query(where("owner").is(owner));
+				tweetList = tweets.findFirst6ByOwnerOrderByCreatedAsc(owner);
 			}
-			query.with(new Sort(Sort.Direction.ASC, "created"));
-			query.limit(6);				
-			List<Tweet> tweetList = mongoTpl.find(
-				query,
-				Tweet.class);
 			for(Tweet tweet: tweetList) {
 				retList.add(
 					new HashMap<String, String>() {{
@@ -333,9 +323,7 @@ public class TwitterCtrl {
 	}
 	
 	private String getOembed (Twitter twitter, long tweetId) {
-		Oembed oembed = mongoTpl.findOne(
-				query(where("id").is(tweetId)),
-				Oembed.class);
+		Oembed oembed = oembeds.findOne(tweetId); 
 		if (oembed == null) {
 			try {
 				int limit = limitSer.getLimit(twitter, limitSer.LIMIT_STR_OEMB); 
@@ -346,7 +334,7 @@ public class TwitterCtrl {
 					oembed = new Oembed(tweetId, embed,
 							twitter.getOAuthAccessToken().getUserId());
 					limitSer.setLimit(twitter, limitSer.LIMIT_STR_OEMB, --limit);
-					mongoTpl.save(oembed);
+					oembeds.save(oembed);
 					return embed;
 				} else {
 					return "";
@@ -373,12 +361,7 @@ public class TwitterCtrl {
 		}
 		
 	private long getOldestTweetId(long owner) {
-		Tweet tweet = mongoTpl.findOne(
-				query(where("owner").is(owner))
-					.with(new Sort(
-							Sort.Direction.ASC
-							, "id")),
-				Tweet.class);
+		Tweet tweet = tweets.findFirstByOwnerOrderByIdAsc(owner);
 		return tweet == null ? 0 : tweet.getId();
 	}
 	
@@ -403,7 +386,7 @@ public class TwitterCtrl {
 				log.info("tweetCount: " + tweets.size() + " round: " + round);
 				if (tweets.size() > 2) {
 					for (Status status : tweets) {
-						mongoTpl.save(new Tweet(status));
+						this.tweets.save(new Tweet(status));
 					}
 				} else {
 					exhausted = true;

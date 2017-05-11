@@ -1,10 +1,15 @@
 package fi.karilaalo.trin.twitter;
 
-import org.springframework.data.annotation.Id;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
+
+@Entity
 public class Oembed {
 	
 	@Id long id;
+	@Column(columnDefinition = "TEXT")
 	String oembed;
 	long owner;
 	
