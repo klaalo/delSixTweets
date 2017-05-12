@@ -192,7 +192,7 @@ public class TwitterCtrl {
 				try {
 					oList = oembeds.findByOwner(twitter.getOAuthAccessToken().getUserId());
 					for (Oembed o: oList) {
-						if (tweets.countById(o.getId()) > 0) {
+						if (tweets.countById(o.getId()) < 1) {
 							try {
 								oembeds.delete(o.getId());
 								count += 1;
