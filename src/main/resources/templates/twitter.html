@@ -140,11 +140,12 @@
 		</ul>
 		<p><a href='http://twitter4j.org'>Twitter4j</a> library is used to connect to Twitter API.</p>
 		<h3>Continuous Integration</h3>
-		<p>Gitlab makes possible to use <a href='https://docs.gitlab.com/ee/ci/pipelines.html'>Pipelines</a> with a local 
-		<a href='https://docs.gitlab.com/runner/'>runner</a>. The project has been set up so that each successful build job
-		on the pipeline will be followed by another job to deploy a new revision onto the server.</p>
+		<p>The project has been set to use <a href="https://travis-ci.org/">Travis</a> so 
+		that each successful build job will deploy a new revision on the server.</p>
+
 		<h3>Source code hosting</h3>
-		<p>The source code of the demo is hosted at <a href='https://gitlab.com/kari.laalo/delSixTweets'>Gitlab</a>.</p>
+		<p>The source code of the demo is hosted at
+		<a href='https://github.com/klaalo/delSixTweets'>GitHub</a>.</p>
    </div>
         
 	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" th:if="${session.twitterAccessToken != null and superAdmin}">
