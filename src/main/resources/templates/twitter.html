@@ -305,7 +305,7 @@
 				max = id;
 			}
 		});
-		history.pushState({foo:'bar'}, "Oma twitter", '/#?skipStr=' + max);
+		history.pushState({foo:'bar'}, "Oma twitter", '/?skipStr=' + max);
 		getTweets(max);
 	});
 

@@ -5,7 +5,7 @@
 
 	<groupId>fi.karilaalo.trin</groupId>
 	<artifactId>delSixTweets</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<packaging>jar</packaging>
 
 	<name>delSixTweets</name>
