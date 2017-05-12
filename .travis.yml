@@ -7,6 +7,6 @@ env:
 before_install:
   - curl -su "${props}" -o src/main/resources/private.properties https://trin.karilaalo.fi/misc/own/contactForm-private.properties
 script:
-  - mvn test
+  - mvn verify coveralls:report
 after_success:
   - curl -u "${props}" -F 'file=@target/delSixTweets-0.0.1.jar' https://trin.karilaalo.fi/cgi/up.sh
