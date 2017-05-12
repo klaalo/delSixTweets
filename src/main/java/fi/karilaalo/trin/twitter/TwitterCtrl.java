@@ -408,8 +408,7 @@ public class TwitterCtrl {
 	    	while (e.hasMoreElements()) {
 	    		String key = (String) e.nextElement();
 	    		if (key.equalsIgnoreCase("X-Forwarded-Host")) {
-	    			url = req.getScheme() +
-	    					"://" +
+	    			url = "https://" +
 	    					req.getHeader(key) + "/";
 	    			break;
 	    		}
