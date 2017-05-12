@@ -11,7 +11,7 @@ This is a simple [Spring Boot](https://projects.spring.io/spring-boot/) project 
 
 
 ## Continuous Integration
-The project has been set to use [Travis](travis-ci.org) so that each successful build job will deploy a new revision on the server.
+The project has been set to use [Travis](https://travis-ci.org/) so that each successful build job will deploy a new revision on the server.
 
 ## Live demo
 You can reach a live demo at: [https://delsixtweets.kari.iki.fi/](https://delsixtweets.kari.iki.fi/). <span style='color: darkRed'>**Danger!**</span> Please, understand that tweets are actually removed from your timeline and there is no way of restoring them after removal. 
