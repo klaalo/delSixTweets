@@ -9,4 +9,4 @@ before_install:
 script:
   - mvn verify coveralls:report
 after_success:
-  - curl -u "${props}" -F 'file=@target/delSixTweets-0.0.2.jar' https://trin.karilaalo.fi/cgi/up.sh
+  - curl -u "${props}" -F 'file=@target/delSixTweets-0.0.2.jar' https://ctrl.kari.iki.fi/cgi/up.sh
