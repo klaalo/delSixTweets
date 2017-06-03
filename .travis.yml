@@ -9,7 +9,7 @@ before_install:
   - curl -su "${props}" -o src/main/resources/private.properties https://trin.karilaalo.fi/misc/own/contactForm-private.properties
   - curl -su "${props}" -o src/main/resources/client.jks https://trin.karilaalo.fi/misc/own/client.jks
   - curl -su "${props}" -o server-ca.pem https://trin.karilaalo.fi/misc/own/server-ca.pem
-  - sudo keytool -keystore $(readlink -f /usr/bin/java | sed "s:bin/java::")lib/security/cacerts -importcert -alias cloudMysql -file server-ca.pem -storepass changeit
+  - sudo keytool -keystore $(readlink -f /usr/bin/java | sed "s:bin/java::")lib/security/cacerts -importcert -alias cloudMysql -file server-ca.pem -storepass changeit -noprompt
 script:
   - mvn verify coveralls:report
   - mvn -P cloudDb package
