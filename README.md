@@ -8,7 +8,7 @@ This is a simple [Spring Boot](https://projects.spring.io/spring-boot/) project 
 
 
 ## App Engine
-The project has been modified to run on [Google App Engine](https://cloud.google.com/appengine/). If you are looking for the plain Spring Boot version, please see branch [plainSpring](tree/plainSpring).
+The project has been modified to run on [Google App Engine](https://cloud.google.com/appengine/). If you are looking for the plain Spring Boot version, please see branch [plainSpring](../../tree/plainSpring).
 
 App Engine version is based on relevant [archetype](https://github.com/klaalo/spring-boot-gae-stub).
 
