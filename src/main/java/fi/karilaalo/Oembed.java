@@ -1,17 +1,15 @@
-package fi.karilaalo.trin.twitter;
+package fi.karilaalo;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
 @Entity
 public class Oembed {
 	
 	@Id long id;
-	@Column(columnDefinition = "TEXT")
 	String oembed;
-	long owner;
+	@Index long owner;
 	
 	public Oembed() {
 		

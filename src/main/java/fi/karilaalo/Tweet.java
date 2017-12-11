@@ -1,10 +1,10 @@
-package fi.karilaalo.trin.twitter;
+package fi.karilaalo;
 
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
 import twitter4j.Status;
 
@@ -14,8 +14,7 @@ public class Tweet {
 	
 	@Id long id;
 	Date created;
-	Long owner;
-	@Lob Status status;
+	@Index Long owner;
 	
 	public Tweet() {
 			
@@ -25,7 +24,6 @@ public class Tweet {
 	public Tweet(Status status) {
 		this.id = status.getId();
 		this.created = status.getCreatedAt();
-		this.status = status;
 		this.owner = status.getUser().getId();
 	}
 
@@ -40,8 +38,4 @@ public class Tweet {
 	}
 
 
-	public Status getStatus() {
-		return status;
-	}
-	
 }

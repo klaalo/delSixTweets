@@ -1,9 +1,11 @@
-package fi.karilaalo.trin.twitter;
+package fi.karilaalo;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 @Configuration
+@PropertySource(value = "classpath:application.properties")
 public class TwitterConfiguration {
 
 	private long twitterSuper;

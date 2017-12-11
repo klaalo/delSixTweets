@@ -139,10 +139,6 @@
 			<li>Spring Boot</li>
 		</ul>
 		<p><a href='http://twitter4j.org'>Twitter4j</a> library is used to connect to Twitter API.</p>
-		<h3>Continuous Integration</h3>
-		<p>The project has been set to use <a href="https://travis-ci.org/">Travis</a> so 
-		that each successful build job will deploy a new revision on the server.</p>
-
 		<h3>Source code hosting</h3>
 		<p>The source code of the demo is hosted at
 		<a href='https://github.com/klaalo/delSixTweets'>GitHub</a>.</p>
@@ -233,8 +229,10 @@
 	$(function () {
 
 		$(document).ajaxSend(function(e, xhr, options) {
+			/*[# th:if="${hasSession}"]*/
 			var token = /*[[${_csrf.token}]]*/
 			var header = /*[[${_csrf.headerName}]]*/
+			/*[/]*/
 			xhr.setRequestHeader(header, token);
 		});
 		

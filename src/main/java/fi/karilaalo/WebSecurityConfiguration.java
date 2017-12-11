@@ -1,4 +1,4 @@
-package fi.karilaalo.trin.twitter;
+package fi.karilaalo;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -9,7 +9,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	public static final String[] PERM_ALL = {"/", "/favicon.ico", 
 			"/sign-in-with-twitter-link.png",
-			"/oldestTweetList", "/twitterJson"};
+			"/oldestTweetList", "/twitterJson"
+			, "/_ah/**"
+			};
 	
 	@Override
 	public void configure(HttpSecurity http) throws Exception {

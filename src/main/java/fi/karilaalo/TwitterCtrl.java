@@ -1,4 +1,4 @@
-package fi.karilaalo.trin.twitter;
+package fi.karilaalo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +15,6 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -114,7 +113,7 @@ public class TwitterCtrl {
 		return retMap;
 	}
 	
-	@Transactional
+	//@Transactional
 	@GetMapping("/twitterJson")
 	@ResponseBody
 	public Map<String, String> getJson (@RequestParam String op,
@@ -302,9 +301,9 @@ public class TwitterCtrl {
 			long owner = twitter.getOAuthAccessToken().getUserId();
 			List<Tweet> tweetList;
 			if (skipStr != null && !skipStr.isEmpty()) {
-				tweetList = tweets.findFirst6ByOwnerAndIdGreaterThanOrderByCreatedAsc(owner, Long.parseLong(skipStr));
+				tweetList = tweets.findFirst6ByOwnerAndIdGreaterThanOrderById(owner, Long.parseLong(skipStr));
 			} else {
-				tweetList = tweets.findFirst6ByOwnerOrderByCreatedAsc(owner);
+				tweetList = tweets.findFirst6ByOwnerOrderById(owner);
 			}
 			for(Tweet tweet: tweetList) {
 				retList.add(
@@ -337,6 +336,7 @@ public class TwitterCtrl {
 					oembeds.save(oembed);
 					return embed;
 				} else {
+					log.debug("-- ratelimit below 11: " + limit);
 					return "";
 				}
 			} catch (TwitterException e) {
