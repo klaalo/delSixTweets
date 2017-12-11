@@ -18,3 +18,4 @@ script:
   - mvn -P cloudDb package -DskipTests
 #after_success:
 #  - curl -u "${props}" -F 'file=@target/delSixTweets-0.0.2.jar' https://ctrl.kari.iki.fi/cgi/up.sh
+# up
