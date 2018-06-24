@@ -13,6 +13,3 @@ The project has been modified to run on [Google App Engine](https://cloud.google
 App Engine version is based on relevant [archetype](https://github.com/klaalo/spring-boot-gae-stub).
 
 Unit tests and CI were removed in connection with migrating to app engine.
-
-## Live demo
-You can reach a live demo at: [https://g.karilaalo.fi/twitter/](https://g.karilaalo.fi/twitter/). <span style='color: darkRed'>**Danger!**</span> Please, understand that tweets are actually removed from your timeline and there is no way of restoring them after removal. 
